@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es" data-palette="papel">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivos de Trámite | Sistema de Inventarios</title>
+    <script>
+        (function () {
+            try {
+                var p = localStorage.getItem('sentre_palette');
+                if (p === 'papel' || p === 'piedra' || p === 'pizarra') {
+                    document.documentElement.setAttribute('data-palette', p);
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body data-theme="tramite">
+    <div class="page-shell page-shell--converter">
+        <nav class="top-bar" aria-label="Navegación principal">
+            <a href="/" class="btn-back" title="Volver al inicio">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Inicio
+            </a>
+
+            <div class="module-switcher" role="tablist" aria-label="Cambiar módulo">
+                <a href="/tramite" class="switcher-link active" aria-current="page">Trámite</a>
+                <a href="/concentracion" class="switcher-link">Concentración</a>
+            </div>
+
+            <button type="button" class="palette-btn" id="btnPalette" title="Cambiar paleta neutra (Papel / Piedra / Pizarra)" aria-label="Cambiar paleta de colores">
+                <span class="palette-swatch" aria-hidden="true"></span>
+                <span class="palette-btn__label" id="paletteLabel">Papel</span>
+            </button>
+        </nav>
+
+        <header class="hero">
+            <div class="hero-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="9" y1="13" x2="15" y2="13" />
+                    <line x1="9" y1="17" x2="15" y2="17" />
+                </svg>
+            </div>
+            <h1>Archivos de Trámite</h1>
+            <p>Convierte reportes PDF de SENTRE a Plantilla PERGUB (Anexo 30 • IAT)</p>
+        </header>
+
+        <main class="converter-main">
+            <div class="upload-zone" id="uploadZone" data-endpoint="/upload" data-filename="inventario_tramite_anexo30.xlsx">
+                <div class="upload-content" id="uploadContent">
+                    <div class="upload-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                    </div>
+                    <h2>Arrastra tu archivo PDF aquí</h2>
+                    <p>o haz clic para seleccionarlo desde tu equipo</p>
+                    <input type="file" id="fileInput" accept=".pdf,application/pdf" hidden>
+                    <button type="button" class="btn-primary" id="btnSelect">Seleccionar archivo PDF</button>
+                    <span class="upload-hint">Solo archivos PDF • Máximo 50 MB</span>
+                </div>
+
+                <div class="process-status hidden" id="processStatus" aria-live="polite">
+                    <div class="status-icon">
+                        <div class="spinner"></div>
+                    </div>
+                    <h2 id="statusTitle">Procesando...</h2>
+                    <p id="statusMessage">Por favor espera</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <div class="success-content hidden" id="successContent" aria-live="polite">
+                    <div class="state-badge-icon state-badge-icon--success">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                    </div>
+                    <h2>Extracción completada</h2>
+                    <div class="record-pill" id="recordCount">0 registros extraídos</div>
+                    <div class="output-filename" id="outputFileName">inventario_tramite_anexo30.xlsx</div>
+                    <div class="action-row">
+                        <button type="button" class="btn-download" id="btnDownload">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Descargar XLSX
+                        </button>
+                        <button type="button" class="btn-secondary" id="btnReset">Procesar otro archivo</button>
+                    </div>
+                </div>
+
+                <div class="error-content hidden" id="errorContent" aria-live="assertive">
+                    <div class="state-badge-icon state-badge-icon--error">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="15" y1="9" x2="9" y2="15" />
+                            <line x1="9" y1="9" x2="15" y2="15" />
+                        </svg>
+                    </div>
+                    <h2>No se pudo completar la conversión</h2>
+                    <p id="errorMessage">Ha ocurrido un error</p>
+                    <div class="action-row">
+                        <button type="button" class="btn-secondary" id="btnRetry">Intentar de nuevo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="file-info hidden" id="fileInfo">
+                <div class="file-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                </div>
+                <div class="file-details">
+                    <span class="file-name" id="fileName">archivo.pdf</span>
+                    <span class="file-size" id="fileSize">0 KB</span>
+                </div>
+            </div>
+        </main>
+
+        <footer class="page-footer">
+            <div class="stats-strip">
+                <div class="stat-item">
+                    <span class="stat-value" id="globalCounter">0</span>
+                    <span class="stat-label">registros procesados</span>
+                </div>
+                <span class="stat-divider" aria-hidden="true"></span>
+                <div class="stat-item">
+                    <span class="stat-value" id="globalFilesCounter">0</span>
+                    <span class="stat-label">archivos convertidos</span>
+                </div>
+            </div>
+            <p>Diseñado para la Contraloría Municipal de OPB por Ricardo J. Terrazas R.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+
+</html>
