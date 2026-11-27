@@ -4,9 +4,9 @@
 (function () {
     const STORAGE_KEY = 'sentre_palette';
     const PALETTES = [
+        { id: 'pizarra', label: 'Pizarra' },
         { id: 'papel', label: 'Papel' },
         { id: 'piedra', label: 'Piedra' },
-        { id: 'pizarra', label: 'Pizarra' },
     ];
 
     function getSavedPalette() {

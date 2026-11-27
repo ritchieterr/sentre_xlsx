@@ -1,7 +1,6 @@
 /* ===== Paletas Neutras Minimalistas (Sin Neón) ===== */
 
-/* 1. Papel (Claro minimalista - por defecto) */
-:root,
+/* 1. Papel (Claro minimalista) */
 html[data-palette="papel"] {
     --bg-base: #f8f8f6;
     --surface: #ffffff;
@@ -77,7 +76,8 @@ html[data-palette="piedra"] {
     --swatch-b: #5a5349;
 }
 
-/* 3. Pizarra (Grafito oscuro mate, cero neón) */
+/* 3. Pizarra (Grafito oscuro mate, cero neón - por defecto) */
+:root,
 html[data-palette="pizarra"] {
     --bg-base: #141517;
     --surface: #1c1e21;
